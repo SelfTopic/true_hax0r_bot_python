@@ -1,5 +1,5 @@
 from aiogram import BaseMiddleware 
-from aiogram.types import CallbackQuery, Message, Update
+from aiogram.types import CallbackQuery, Message, Update, TelegramObject
 from typing import Self, Any, Dict, Awaitable, Callable
 
 import time
@@ -14,9 +14,9 @@ class LoggingMiddleware(BaseMiddleware):
     async def __call__(
         self: Self,
         handler: Callable[
-            [Update, Dict[str, Any]
+            [TelegramObject, Dict[str, Any]
         ], Awaitable[Any]],
-        event: Update,
+        event: TelegramObject,
         data: Dict[str, Any]  
     ) -> None:
         
@@ -35,11 +35,11 @@ class LoggingMiddleware(BaseMiddleware):
         user_information = "Not User"
 
         # Getting information of user if is found 
-        if (isinstance(event.event, Message) or 
-            isinstance(event.event, CallbackQuery)) and event.event.from_user:
-            user_information = f"Name={event.event.from_user.first_name} ID={event.event.from_user.id}"
+        if (isinstance(event, Message) or 
+            isinstance(event, CallbackQuery)) and event.from_user:
+            user_information = f"Name={event.from_user.first_name} ID={event.from_user.id}"
 
 
-        logger.info(f"New update on {user_information} on {process_update_time} ms. Event type is {event.event_type}")
+        logger.info(f"New update on {user_information} on {process_update_time} ms. Event type is {event.__class__.__name__}")
 
 __all__ = ["LoggingMiddleware"]

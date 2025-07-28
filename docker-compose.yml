@@ -1,0 +1,36 @@
+services:
+
+  postgres:
+
+    image: "postgres:16"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: development
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: changeme
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - 5050:80
+
+
+  bot:
+    build: .
+    
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  pgadmin:
