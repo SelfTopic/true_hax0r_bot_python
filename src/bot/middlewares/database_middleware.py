@@ -12,6 +12,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 class DatabaseMiddleware(BaseMiddleware):
+    """Middleware for connect database """
+
     def __init__(
         self, session_factory: async_sessionmaker[AsyncSession]
     ) -> None:

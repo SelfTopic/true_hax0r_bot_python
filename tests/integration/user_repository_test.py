@@ -62,3 +62,12 @@ async def test_user_lifecycle(session: AsyncSession):
     none_user = await repo.get("undefined")
 
     assert none_user == None
+
+    exist_user = await repo.exists(123)
+
+    assert exist_user == True 
+
+    not_exists_user = await repo.exists(2345)
+
+    assert not_exists_user == False
+    

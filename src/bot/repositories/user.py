@@ -1,7 +1,7 @@
 from .base import Base 
 
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy import select
+from sqlalchemy import select, exists
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import User
@@ -62,22 +62,32 @@ class UserRepository(Base):
     
     async def get(
         self,
-        search_parametr: Union[str, int]
+        search_parameter: Union[str, int]
     ) -> Optional[User]:
         
         # Setting column for searching
         search_column = User.telegram_id
 
-        if isinstance(search_parametr, str):
+        if isinstance(search_parameter, str):
             search_column = User.username # Find by username if argument str type
 
         user = await self.session.scalar(
             select(User)
-            .filter(search_column == search_parametr)
-            .limit(1)
+            .filter(search_column == search_parameter)
         )
 
         if not user:
-            logger.debug(f"User ({search_parametr}) not found in database")
+            logger.debug(f"User ({search_parameter}) not found in database")
 
         return user
+    
+    async def exists(self, telegram_id: int) -> bool:
+
+        exist = await self.session.scalar(
+            select(exists(User.telegram_id)).where(User.telegram_id == telegram_id)
+        )
+
+        if not exist: 
+            return False 
+        
+        return exist
